@@ -19,6 +19,7 @@
 #include <future>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 // Used in fbonly to add socket creator setup
 #ifndef ADDITIONAL_SENDER_SETUP
@@ -173,7 +174,7 @@ void sigUSR1Handler(int) {
   ReportPerfSignalSubscriber::notify();
 }
 
-int main(int argc, char *argv[]) {
+int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInfo>& fileList) {
 #ifdef WDTFBINIT
   WDTFBINIT
 #endif
@@ -213,6 +214,13 @@ int main(int argc, char *argv[]) {
   };
   GFLAGS_NAMESPACE::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);
+  //google::SetLogDestination(google::INFO, "/home/zsp/work/wdt_rsync/faceBook_wdt/wdt/sbuild/_bin/wdt/prefix_");
+  //FLAGS_stderrthreshold=google::INFO;
+  //FLAGS_colorlogtostderr=true;
+  //FLAGS_log_dir="./";
+  FLAGS_logtostderr = false;
+
+  
   if (badGflagFound) {
     // will only work for receivers
     WLOG(ERROR) << "Continuing despite bad flags";
@@ -263,11 +271,17 @@ int main(int argc, char *argv[]) {
     return success ? OK : ERROR;
   }
 
+  
+  options.start_port = 22888;
+  options.num_ports = 8;
+  options.static_ports = true;
   // General case : Sender or Receiver
   std::unique_ptr<WdtTransferRequest> reqPtr;
   if (connectUrl.empty()) {
+    //reqPtr = std::make_unique<WdtTransferRequest>(
+    //    options.start_port, options.num_ports, FLAGS_directory);
     reqPtr = std::make_unique<WdtTransferRequest>(
-        options.start_port, options.num_ports, FLAGS_directory);
+        22888, 8, FLAGS_directory);
     reqPtr->hostName = FLAGS_destination;
     reqPtr->transferId = FLAGS_transfer_id;
     if (!FLAGS_test_only_encryption_secret.empty()) {
@@ -301,6 +315,13 @@ int main(int argc, char *argv[]) {
   if (FLAGS_destination.empty() && connectUrl.empty()) {
     Receiver receiver(req);
     WdtOptions &recOptions = receiver.getWdtOptions();
+	recOptions.start_port = 22888;
+	recOptions.num_ports = 8;
+	recOptions.static_ports = true;
+
+	for(int iPos = 0; iPos < req.ports.size(); ++iPos)
+		WLOG(INFO) << "recv port: " << req.ports[iPos];
+	
     if (FLAGS_run_as_daemon) {
       // Backward compatible with static ports, you can still get dynamic
       // daemon ports using -start_port 0 like before
@@ -372,6 +393,9 @@ int main(int argc, char *argv[]) {
     WLOG(INFO) << "Making Sender with encryption set = "
                << req.encryptionData.isSet();
 
+	
+	req.fileInfo = fileList;
+
     retCode = wdt.wdtSend(req, setupAbortChecker());
   }
   cancelAbort();
@@ -383,3 +407,4 @@ int main(int argc, char *argv[]) {
   }
   return retCode;
 }
+
