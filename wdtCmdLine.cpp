@@ -221,6 +221,8 @@ int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInf
   FLAGS_logtostderr = false;
 
   
+  FLAGS_stderrthreshold = google::FATAL;
+  
   if (badGflagFound) {
     // will only work for receivers
     WLOG(ERROR) << "Continuing despite bad flags";
@@ -313,6 +315,8 @@ int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInf
     reqPtr->hostName = FLAGS_hostname;
   }
   if (FLAGS_destination.empty() && connectUrl.empty()) {
+  	google::ShutdownGoogleLogging();
+	
     Receiver receiver(req);
     WdtOptions &recOptions = receiver.getWdtOptions();
 	recOptions.start_port = startPort;
