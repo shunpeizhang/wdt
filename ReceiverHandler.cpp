@@ -20,8 +20,11 @@ int recvHandle(int iStartPort, int numPorts, char *rootDir, int uid, int gid)
 	//char *argv[] = {"./wdt", "-directory", "/data/work/wdt/dest", "-transfer_id", "1", "-start_port", "22888", "-num_ports", "8", "-log_dir", "/data/work/wdt/log/src"};
 	//int argc = 11;
 
-	char *argv[] = {"./wdt", "-directory", "/data/work/wdt/dest", "-transfer_id", "1", "-log_dir", "/data/work/wdt/log/src"};
-	int argc = 7;
+	//char *argv[] = {"./wdt", "-directory", "/data/work/wdt/dest", "-transfer_id", "1", "-log_dir", "/data/work/wdt/log/src"};
+	//int argc = 7;
+
+	char *argv[] = {"./wdt", "-directory", rootDir, "-transfer_id", "1"};
+	int argc = 5;
 
 	std::vector<facebook::wdt::WdtFileInfo> destFileList;
 
