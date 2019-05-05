@@ -174,7 +174,7 @@ void sigUSR1Handler(int) {
   ReportPerfSignalSubscriber::notify();
 }
 
-int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInfo>& fileList) {
+int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInfo>& fileList, int startPort, int numPorts) {
 #ifdef WDTFBINIT
   WDTFBINIT
 #endif
@@ -272,8 +272,8 @@ int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInf
   }
 
   
-  options.start_port = 22888;
-  options.num_ports = 8;
+  options.start_port = startPort;
+  options.num_ports = numPorts;
   options.static_ports = true;
   // General case : Sender or Receiver
   std::unique_ptr<WdtTransferRequest> reqPtr;
@@ -281,7 +281,7 @@ int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInf
     //reqPtr = std::make_unique<WdtTransferRequest>(
     //    options.start_port, options.num_ports, FLAGS_directory);
     reqPtr = std::make_unique<WdtTransferRequest>(
-        22888, 8, FLAGS_directory);
+        startPort, numPorts, FLAGS_directory);
     reqPtr->hostName = FLAGS_destination;
     reqPtr->transferId = FLAGS_transfer_id;
     if (!FLAGS_test_only_encryption_secret.empty()) {
@@ -315,8 +315,8 @@ int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInf
   if (FLAGS_destination.empty() && connectUrl.empty()) {
     Receiver receiver(req);
     WdtOptions &recOptions = receiver.getWdtOptions();
-	recOptions.start_port = 22888;
-	recOptions.num_ports = 8;
+	recOptions.start_port = startPort;
+	recOptions.num_ports = numPorts;
 	recOptions.static_ports = true;
 
 	for(int iPos = 0; iPos < req.ports.size(); ++iPos)

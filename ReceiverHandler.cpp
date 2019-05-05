@@ -11,7 +11,7 @@
 
 
 
-extern int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInfo>& fileList);
+extern int wdt_main(int argc, char *argv[], const std::vector<facebook::wdt::WdtFileInfo>& fileList, int startPort, int numPorts);
 
 
 
@@ -23,12 +23,15 @@ int recvHandle(int iStartPort, int numPorts, char *rootDir, int uid, int gid)
 	//char *argv[] = {"./wdt", "-directory", "/data/work/wdt/dest", "-transfer_id", "1", "-log_dir", "/data/work/wdt/log/src"};
 	//int argc = 7;
 
-	char *argv[] = {"./wdt", "-directory", rootDir, "-transfer_id", "1"};
+	char tmpBuf[32];
+	snprintf(tmpBuf, sizeof(tmpBuf) - 1, "%d", iStartPort);
+
+	char *argv[] = {"./wdt", "-directory", rootDir, "-transfer_id", tmpBuf};
 	int argc = 5;
 
 	std::vector<facebook::wdt::WdtFileInfo> destFileList;
 
-	return wdt_main(argc, argv, destFileList);
+	return wdt_main(argc, argv, destFileList, iStartPort, numPorts);
 }
 
 

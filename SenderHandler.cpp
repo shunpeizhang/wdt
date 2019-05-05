@@ -3,12 +3,14 @@
 
 #include <vector>
 #include <stdlib.h>
+#include<stdio.h>
+
 
 
 using namespace std;
 
 
-extern int wdt_main(int argc, char *argv[], const vector<facebook::wdt::WdtFileInfo>& fileList);
+extern int wdt_main(int argc, char *argv[], const vector<facebook::wdt::WdtFileInfo>& fileList, int startPort, int numPorts);
 
 
 int sendHandle(int iStartPort, int numPorts, char *destIp, char *rootDir, WDTFileHandleInfo *fileList, int iFileListLen)
@@ -27,7 +29,10 @@ int sendHandle(int iStartPort, int numPorts, char *destIp, char *rootDir, WDTFil
 	//char *argv[] = {"./wdt", "-directory", "/data/work/wdt/src", "-destination", "172.16.11.17", "-transfer_id", "1", "-log_dir", "/data/work/wdt/log/dest"};
 	//int argc = 9;
 
-	char *argv[] = {"./wdt", "-directory", rootDir, "-destination", "172.16.11.162", "-transfer_id", "1"};
+	char tmpBuf[32];
+	snprintf(tmpBuf, sizeof(tmpBuf) - 1, "%d", iStartPort);
+
+	char *argv[] = {"./wdt", "-directory", rootDir, "-destination", destIp, "-transfer_id", tmpBuf};
 	int argc = 7;
 
 
@@ -43,7 +48,7 @@ int sendHandle(int iStartPort, int numPorts, char *destIp, char *rootDir, WDTFil
 	}
 	
 
-	return wdt_main(argc, argv, destFileList);
+	return wdt_main(argc, argv, destFileList, iStartPort, numPorts);
 }
 
 
