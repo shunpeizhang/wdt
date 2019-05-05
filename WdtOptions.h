@@ -205,7 +205,8 @@ class WdtOptions {
    * accept with timeout of accept_timeout_millis. first connection from sender
    * must come before max_accept_retries.
    */
-  int32_t max_accept_retries{500};
+  //int32_t max_accept_retries{500};
+  int32_t max_accept_retries{20};
 
   /**
    * accept window size in millis. For a session, after the first connection is
